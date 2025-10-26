@@ -1,7 +1,13 @@
-export interface RestaurantOwnerProfile {
-    restaurant_name: string;
+export interface Restaurant {
+    id: number;
+    name: string;
     description: string;
     address?: string;
+}
+
+export interface RestaurantOwnerProfile {
+    verified: boolean;
+    restaurants: Restaurant[];
 }
 
 export interface User {

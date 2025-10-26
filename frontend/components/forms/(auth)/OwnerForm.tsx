@@ -8,6 +8,7 @@ import { User, Mail, Lock, Phone, Home, FileText } from "lucide-react";
 
 const OwnerForm = () => {
     const router = useRouter();
+
     const [formData, setFormData] = useState<OwnerRegisterData>({
         fullname: "",
         email: "",
@@ -21,20 +22,29 @@ const OwnerForm = () => {
 
     const { mutate, isPending, error } = useRegisterOwner();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    ) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!formData.fullname || !formData.email || !formData.password || !formData.restaurant_name) {
+            alert("Please fill in all required fields.");
+            return;
+        }
         mutate(formData, {
-            onSuccess: () => router.push("/"),
+            onSuccess: () => router.push("/profile"),
         });
     };
 
     return (
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form
+            className="space-y-4 bg-white rounded-2xl w-full"
+            onSubmit={handleSubmit}
+        >
             <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input
@@ -47,6 +57,7 @@ const OwnerForm = () => {
                     required
                 />
             </div>
+
             <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input
@@ -59,6 +70,7 @@ const OwnerForm = () => {
                     required
                 />
             </div>
+
             <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input
@@ -71,6 +83,7 @@ const OwnerForm = () => {
                     required
                 />
             </div>
+
             <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input
@@ -83,6 +96,7 @@ const OwnerForm = () => {
                     required
                 />
             </div>
+
             <select
                 name="gender"
                 value={formData.gender}
@@ -93,6 +107,7 @@ const OwnerForm = () => {
                 <option value="F">Female</option>
                 <option value="O">Other</option>
             </select>
+
             <div className="relative">
                 <Home className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input
@@ -105,33 +120,41 @@ const OwnerForm = () => {
                     required
                 />
             </div>
+
             <div className="relative">
-                <FileText className="absolute left-3 top-2 text-gray-400" size={18} />
+                <FileText className="absolute left-3 top-3 text-gray-400" size={18} />
                 <textarea
                     name="description"
-                    placeholder="Description"
+                    placeholder="Restaurant Description"
                     value={formData.description}
                     onChange={handleChange}
                     className="w-full border border-blue-200 rounded-lg px-10 py-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
                     required
                 />
             </div>
+
             <input
                 type="text"
                 name="address"
-                placeholder="Address"
+                placeholder="Address (optional)"
                 value={formData.address}
                 onChange={handleChange}
                 className="w-full border border-blue-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-300 focus:outline-none"
             />
+
             <button
                 type="submit"
                 disabled={isPending}
-                className="w-full bg-blue-400 text-white py-2 rounded-lg hover:bg-blue-500 transition cursor-pointer"
+                className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition disabled:opacity-70 disabled:cursor-not-allowed"
             >
-                {isPending ? "Registering..." : "Register as Restaurant"}
+                {isPending ? "Registering..." : "Register as Restaurant Owner"}
             </button>
-            {error && <p className="text-red-500">{(error as any).message}</p>}
+
+            {error && (
+                <p className="text-red-500 text-center text-sm mt-2">
+                    {(error as any)?.response?.data?.message || "Something went wrong. Please try again."}
+                </p>
+            )}
         </form>
     );
 };

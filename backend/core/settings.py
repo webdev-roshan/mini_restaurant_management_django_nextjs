@@ -30,6 +30,10 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "phonenumber_field",
     "authentication",
+    "restaurants",
+    "menu",
+    "orders",
+    "reviews",
 ]
 
 MIDDLEWARE = [

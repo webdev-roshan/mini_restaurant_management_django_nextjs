@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import RestaurantOwnerProfile, CustomerProfile
+from restaurants.models import Restaurant
+from restaurants.serializers import RestaurantSerializer
 
 User = get_user_model()
 
@@ -61,9 +63,11 @@ class OwnerRegisterSerializer(serializers.ModelSerializer):
             user_type="owner",
         )
 
-        RestaurantOwnerProfile.objects.create(
-            user=user,
-            restaurant_name=restaurant_name,
+        RestaurantOwnerProfile.objects.create(user=user)
+
+        Restaurant.objects.create(
+            owner=user,
+            name=restaurant_name,
             description=description,
             address=address,
         )
@@ -93,9 +97,13 @@ class CustomerUserSerializer(serializers.ModelSerializer):
 
 
 class RestaurantOwnerProfileSerializer(serializers.ModelSerializer):
+    restaurants = RestaurantSerializer(
+        many=True, read_only=True, source="user.restaurants"
+    )
+
     class Meta:
         model = RestaurantOwnerProfile
-        fields = ["restaurant_name", "description", "address"]
+        fields = ["verified", "restaurants"]
 
 
 class OwnerUserSerializer(serializers.ModelSerializer):

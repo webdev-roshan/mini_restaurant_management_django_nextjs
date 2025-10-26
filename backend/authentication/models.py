@@ -67,12 +67,11 @@ class RestaurantOwnerProfile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="owner_profile"
     )
-    restaurant_name = models.CharField(max_length=255)
-    description = models.TextField()
-    address = models.TextField(blank=True, null=True)
-
+    verified = models.BooleanField(default=False)
+    
     def __str__(self):
-        return self.restaurant_name
+        return f"{self.user.fullname} ({self.user.email})"
+
 
 
 class CustomerProfile(models.Model):
