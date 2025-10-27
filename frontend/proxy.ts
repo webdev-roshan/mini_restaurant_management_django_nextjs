@@ -1,9 +1,8 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const PUBLIC_ROUTES = ['/', '/login', '/register'];
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
     const token = req.cookies.get('access_token')?.value;
     let pathname = req.nextUrl.pathname;
 
@@ -11,9 +10,9 @@ export function middleware(req: NextRequest) {
 
     const isPublic = PUBLIC_ROUTES.includes(pathname);
 
-    // if ((pathname === '/login' || pathname === '/register') && token) {
-    //     return NextResponse.redirect(new URL('/', req.url));
-    // }
+    if ((pathname === '/login' || pathname === '/register') && token) {
+        return NextResponse.redirect(new URL('/', req.url));
+    }
 
     if (!isPublic && !token) {
         return NextResponse.redirect(new URL('/login', req.url));

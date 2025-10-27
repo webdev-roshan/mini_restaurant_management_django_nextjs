@@ -42,7 +42,7 @@ class OwnerRegisterView(APIView):
             response = Response(
                 {
                     "user": OwnerUserSerializer(user).data,
-                    "message": "Restaurant owner registered successfully",
+                    "message": "Owner registered successfully",
                 },
                 status=status.HTTP_201_CREATED,
             )

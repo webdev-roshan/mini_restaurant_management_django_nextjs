@@ -32,28 +32,12 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
 
 class OwnerRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    restaurant_name = serializers.CharField(write_only=True)
-    description = serializers.CharField(write_only=True)
-    address = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = User
-        fields = [
-            "email",
-            "fullname",
-            "password",
-            "gender",
-            "phone_number",
-            "restaurant_name",
-            "description",
-            "address",
-        ]
+        fields = ["email", "fullname", "password", "gender", "phone_number"]
 
     def create(self, validated_data):
-        restaurant_name = validated_data.pop("restaurant_name")
-        description = validated_data.pop("description")
-        address = validated_data.pop("address", "")
-
         user = User.objects.create_user(
             email=validated_data["email"],
             password=validated_data["password"],
@@ -64,14 +48,6 @@ class OwnerRegisterSerializer(serializers.ModelSerializer):
         )
 
         RestaurantOwnerProfile.objects.create(user=user)
-
-        Restaurant.objects.create(
-            owner=user,
-            name=restaurant_name,
-            description=description,
-            address=address,
-        )
-
         return user
 
 
@@ -107,16 +83,7 @@ class RestaurantOwnerProfileSerializer(serializers.ModelSerializer):
 
 
 class OwnerUserSerializer(serializers.ModelSerializer):
-    owner_profile = RestaurantOwnerProfileSerializer(read_only=True)
-
     class Meta:
         model = User
-        fields = [
-            "id",
-            "email",
-            "fullname",
-            "gender",
-            "phone_number",
-            "user_type",
-            "owner_profile",
-        ]
+        fields = ["id", "email", "fullname", "gender", "phone_number", "user_type"]
+        read_only_fields = ["id", "user_type"]

@@ -1,15 +1,3 @@
-export interface Restaurant {
-    id: number;
-    name: string;
-    description: string;
-    address?: string;
-}
-
-export interface RestaurantOwnerProfile {
-    verified: boolean;
-    restaurants: Restaurant[];
-}
-
 export interface User {
     id: number;
     fullname: string;
@@ -18,6 +6,10 @@ export interface User {
     phone_number: string;
     user_type: "customer" | "owner" | "admin";
     owner_profile?: RestaurantOwnerProfile;
+}
+
+export interface RestaurantOwnerProfile {
+    verified: boolean;
 }
 
 export interface CustomerRegisterData {
@@ -34,9 +26,6 @@ export interface OwnerRegisterData {
     password: string;
     gender?: "M" | "F" | "O";
     phone_number: string;
-    restaurant_name: string;
-    description: string;
-    address?: string;
 }
 
 export interface LoginData {

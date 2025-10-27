@@ -54,6 +54,10 @@ class User(AbstractUser):
     )
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES)
 
+    profile_picture = models.ImageField(
+        upload_to="users/profile_pics/", blank=True, null=True
+    )
+
     REQUIRED_FIELDS = ["fullname", "user_type", "phone_number"]
     USERNAME_FIELD = "email"
 
@@ -68,10 +72,9 @@ class RestaurantOwnerProfile(models.Model):
         User, on_delete=models.CASCADE, related_name="owner_profile"
     )
     verified = models.BooleanField(default=False)
-    
+
     def __str__(self):
         return f"{self.user.fullname} ({self.user.email})"
-
 
 
 class CustomerProfile(models.Model):
