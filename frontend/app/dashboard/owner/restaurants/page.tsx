@@ -1,13 +1,12 @@
 import ProtectedRoute from "@/components/routes/ProtectedRoute";
-// import RestaurantForm from "@/components/dashboard/owner/RestaurantForm";
+import RestaurantList from "@/components/restaurants/RestaurantList";
 
-const CreateRestaurantPage = () => {
+const RestaurantPage = () => {
     return (
         <ProtectedRoute allowedTypes={["owner"]}>
-            {/* <RestaurantForm /> */}
-            <div></div>
+            <RestaurantList onlyOwner={true} />
         </ProtectedRoute>
     );
 };
 
-export default CreateRestaurantPage;
+export default RestaurantPage;

@@ -130,3 +130,8 @@ REST_FRAMEWORK = {
         "authentication.authentication.JWTCookieAuthentication",
     ),
 }
+
+
+# Media files
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

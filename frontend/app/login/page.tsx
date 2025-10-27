@@ -5,6 +5,7 @@ import { useLogin } from "@/hooks/useAuth";
 import { LoginData } from "@/types/authTypes";
 import { useRouter } from "next/navigation";
 import { Mail, Lock } from "lucide-react";
+import { redirectToDashboard } from "@/utils/redirect";
 
 const LoginPage = () => {
     const router = useRouter();
@@ -20,7 +21,7 @@ const LoginPage = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         mutate(formData, {
-            onSuccess: () => router.push("/"),
+            onSuccess: (data) => redirectToDashboard(data, router),
         });
     };
 

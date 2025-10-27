@@ -44,7 +44,7 @@ export interface ItemPayload {
     currency: "USD" | "EUR" | "INR" | "NPR";
     price: number;
     available?: boolean;
-    image?: string;
+    image?: File | null;
     is_vegetarian?: boolean;
     is_spicy?: boolean;
 }

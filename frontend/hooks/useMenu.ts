@@ -72,7 +72,23 @@ export const useItems = () => {
 };
 
 export const createItem = async (data: ItemPayload): Promise<Item> => {
-    const response = await axiosInstance.post<Item>("/menu/items/", data);
+    const formData = new FormData();
+    formData.append("category", data.category.toString());
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("currency", data.currency);
+    formData.append("price", data.price.toString());
+    formData.append("available", (data.available ?? true).toString());
+    formData.append("is_vegetarian", (data.is_vegetarian ?? false).toString());
+    formData.append("is_spicy", (data.is_spicy ?? false).toString());
+    
+    if (data.image) {
+        formData.append("image", data.image);
+    }
+
+    const response = await axiosInstance.post<Item>("/menu/items/", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data;
 };
 
@@ -88,7 +104,23 @@ export const useCreateItem = () => {
 };
 
 export const updateItem = async (id: number, data: ItemPayload): Promise<Item> => {
-    const response = await axiosInstance.put<Item>(`/menu/items/${id}/`, data);
+    const formData = new FormData();
+    formData.append("category", data.category.toString());
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("currency", data.currency);
+    formData.append("price", data.price.toString());
+    formData.append("available", (data.available ?? true).toString());
+    formData.append("is_vegetarian", (data.is_vegetarian ?? false).toString());
+    formData.append("is_spicy", (data.is_spicy ?? false).toString());
+    
+    if (data.image) {
+        formData.append("image", data.image);
+    }
+
+    const response = await axiosInstance.put<Item>(`/menu/items/${id}/`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data;
 };
 

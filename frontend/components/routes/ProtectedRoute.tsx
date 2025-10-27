@@ -19,7 +19,12 @@ const ProtectedRoute = ({ children, allowedTypes }: Props) => {
         }
     }, [user, isLoading, allowedTypes, router]);
 
-    if (isLoading) return <p>Loading...</p>;
+    if (isLoading) return (
+        <div className="flex items-center justify-center min-h-screen">
+            <p>Loading...</p>
+        </div>
+    );
+
     if (user && !allowedTypes.includes(user.user_type)) return null;
 
     return <>{children}</>;

@@ -21,3 +21,10 @@ export interface CreateRestaurantData {
     address?: string;
     image?: File | null;
 }
+
+export interface UpdateRestaurantData {
+    name?: string;
+    description?: string;
+    address?: string;
+    image?: File | null;
+}

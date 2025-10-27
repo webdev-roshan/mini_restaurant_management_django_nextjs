@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import CustomerForm from "@/components/forms/(auth)/CustomerForm";
-import OwnerForm from "@/components/forms/(auth)/OwnerForm";
+import CustomerForm from "@/components/auth/CustomerForm";
+import OwnerForm from "@/components/auth/OwnerForm";
 
 const RegisterPage = () => {
     const [activeForm, setActiveForm] = useState<"customer" | "restaurant">("customer");

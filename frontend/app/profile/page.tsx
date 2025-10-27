@@ -89,30 +89,6 @@ const ProfilePage = () => {
                                     </>
                                 )}
                             </div>
-
-                            {user.owner_profile.restaurants?.length > 0 ? (
-                                <div className="space-y-4">
-                                    {user.owner_profile.restaurants.map((rest, idx) => (
-                                        <div
-                                            key={idx}
-                                            className="border border-gray-200 rounded-xl p-4 shadow-sm bg-gray-50"
-                                        >
-                                            <h4 className="font-semibold text-lg text-gray-800">
-                                                {rest.name}
-                                            </h4>
-                                            <p className="text-gray-600 mt-1">{rest.description}</p>
-                                            {rest.address && (
-                                                <p className="text-gray-500 mt-1">
-                                                    <span className="font-medium">Address:</span>{" "}
-                                                    {rest.address}
-                                                </p>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="text-gray-500 mt-2">No restaurants added yet.</p>
-                            )}
                         </div>
                     )}
                 </div>
