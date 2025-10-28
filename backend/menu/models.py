@@ -14,6 +14,9 @@ class Category(models.Model):
 
     class Meta:
         unique_together = ("restaurant", "name")
+        
+    def __str__(self):
+        return f"{self.name} ({self.restaurant.name})"
 
 
 class Items(models.Model):
@@ -40,3 +43,6 @@ class Items(models.Model):
 
     class Meta:
         unique_together = ("category", "name")
+        
+    def __str__(self):
+        return f"{self.name} ({self.category.restaurant.name})"

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axios";
-import { Category, CategoryPayload, Item, ItemPayload } from "@/types/menuTypes";
+import { Category, CategoryListResponse, CategoryPayload, Item, ItemPayload } from "@/types/menuTypes";
 
 
 export const fetchCategories = async (): Promise<Category[]> => {
@@ -81,7 +81,7 @@ export const createItem = async (data: ItemPayload): Promise<Item> => {
     formData.append("available", (data.available ?? true).toString());
     formData.append("is_vegetarian", (data.is_vegetarian ?? false).toString());
     formData.append("is_spicy", (data.is_spicy ?? false).toString());
-    
+
     if (data.image) {
         formData.append("image", data.image);
     }
@@ -113,7 +113,7 @@ export const updateItem = async (id: number, data: ItemPayload): Promise<Item> =
     formData.append("available", (data.available ?? true).toString());
     formData.append("is_vegetarian", (data.is_vegetarian ?? false).toString());
     formData.append("is_spicy", (data.is_spicy ?? false).toString());
-    
+
     if (data.image) {
         formData.append("image", data.image);
     }
@@ -147,5 +147,19 @@ export const useDeleteItem = () => {
             queryClient.invalidateQueries({ queryKey: ["items"] });
             queryClient.invalidateQueries({ queryKey: ["categories"] });
         },
+    });
+};
+
+
+export const fetchRestaurantCategories = async (restaurant_id: number): Promise<Category[]> => {
+    const response = await axiosInstance.get<Category[]>(`/menu/restaurant/${restaurant_id}/categories/`);
+    return response.data;
+};
+
+export const useRestaurantCategory = (restaurant_id: number) => {
+    return useQuery({
+        queryKey: ["restaurant_categories", restaurant_id],
+        queryFn: () => fetchRestaurantCategories(restaurant_id),
+        enabled: !!restaurant_id,
     });
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useItems, useDeleteItem, useCategories } from "@/hooks/useMenu";
-import { Edit, Trash2, Plus } from "lucide-react";
+import { Edit, Trash2, Plus, Utensils, DollarSign, Tag, Leaf, Flame } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
@@ -29,19 +29,43 @@ const ItemList = () => {
         }
     };
 
-    if (isLoading) return <p>Loading items...</p>;
-    if (error) return <p className="text-red-500">Error loading items.</p>;
-    
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-blue-600"></div>
+                <span className="ml-3 text-gray-600">Loading menu items...</span>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+                <p className="text-red-600">Error loading menu items. Please try again.</p>
+            </div>
+        );
+    }
+
     if (!filteredItems || filteredItems.length === 0) {
         return (
-            <div className="text-center py-8">
-                <p className="text-gray-500 mb-4">
-                    {categoryFilter ? "No items found in this category." : "No items found."}
+            <div className="text-center py-12">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                    <Utensils className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-800 mb-2">
+                    {categoryFilter ? "No items in this category" : "No menu items found"}
+                </h3>
+                <p className="text-gray-600 mb-6">
+                    {categoryFilter ? "This category doesn't have any items yet." : "Get started by adding your first menu item."}
                 </p>
                 <button
-                    onClick={() => router.push("/dashboard/owner/menu/items/create")}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                    onClick={() => {
+                        const restaurantId = window.location.pathname.split('/')[4]; // Extract restaurant_id from URL
+                        router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/items/create`);
+                    }}
+                    className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 cursor-pointer"
                 >
+                    <Plus className="w-4 h-4 mr-2" />
                     Create First Item
                 </button>
             </div>
@@ -49,85 +73,129 @@ const ItemList = () => {
     }
 
     return (
-        <div className="space-y-4">
-            <div className="flex justify-between items-center">
+        <div className="space-y-6 fade-in">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h2 className="text-xl font-bold">Menu Items</h2>
-                    {categoryFilter && (
-                        <p className="text-gray-600">
-                            Category: {getCategoryName(parseInt(categoryFilter))}
-                        </p>
+                    <h2 className="text-xl font-bold text-gray-800">Menu Items</h2>
+                    {categoryFilter ? (
+                        <div className="flex items-center gap-2 mt-1">
+                            <Tag className="w-4 h-4 text-gray-500" />
+                            <p className="text-gray-600">
+                                Category: {getCategoryName(parseInt(categoryFilter))}
+                            </p>
+                        </div>
+                    ) : (
+                        <p className="text-gray-600">Manage your menu items</p>
                     )}
                 </div>
                 <div className="flex gap-2">
                     {categoryFilter && (
                         <button
-                            onClick={() => router.push("/dashboard/owner/menu/items")}
-                            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+                            onClick={() => {
+                                const restaurantId = window.location.pathname.split('/')[4]; // Extract restaurant_id from URL
+                                router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/items`);
+                            }}
+                            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 cursor-pointer border border-gray-300"
                         >
                             Show All Items
                         </button>
                     )}
                     <button
-                        onClick={() => router.push("/dashboard/owner/menu/items/create")}
-                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center gap-2"
+                        onClick={() => {
+                            const restaurantId = window.location.pathname.split('/')[4]; // Extract restaurant_id from URL
+                            router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/items/create`);
+                        }}
+                        className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 cursor-pointer"
                     >
-                        <Plus size={18} />
+                        <Plus size={18} className="mr-2" />
                         Add Item
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredItems.map(item => (
-                    <div key={item.id} className="border rounded-lg p-4 shadow-md relative">
-                        {item.image && (
-                            <img 
-                                src={item.image} 
-                                alt={item.name} 
-                                className="w-full h-40 object-cover rounded-md mb-2" 
-                            />
-                        )}
-                        
-                        <div className="absolute top-2 right-2 flex gap-2">
-                            <button
-                                onClick={() => router.push(`/dashboard/owner/menu/items/update/${item.id}`)}
-                                className="p-1 bg-yellow-200 rounded hover:bg-yellow-300"
-                            >
-                                <Edit size={18} />
-                            </button>
-                            <button
-                                onClick={() => handleDelete(item.id)}
-                                className="p-1 bg-red-200 rounded hover:bg-red-300"
-                                disabled={deleteMutation.isPending}
-                            >
-                                <Trash2 size={18} />
-                            </button>
-                        </div>
+                    <div key={item.id} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl transition-transform duration-200 hover:-translate-y-1 cursor-pointer group">
+                        <div className="relative">
+                            {item.image ? (
+                                <img
+                                    src={item.image}
+                                    alt={item.name}
+                                    className="w-full h-48 object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-48 bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center">
+                                    <Utensils className="w-12 h-12 text-orange-400" />
+                                </div>
+                            )}
 
-                        <h3 className="font-bold text-lg mb-2">{item.name}</h3>
-                        <p className="text-gray-600 mb-2 text-sm">{item.description}</p>
-                        
-                        <div className="space-y-1 text-sm">
-                            <p className="font-semibold text-green-600">
-                                {item.currency} {item.price}
-                            </p>
-                            <p className="text-gray-500">
-                                Category: {getCategoryName(item.category)}
-                            </p>
-                            <div className="flex gap-2 flex-wrap">
-                                <span className={`px-2 py-1 rounded text-xs ${
-                                    item.available ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                                }`}>
+                            <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                    onClick={() => {
+                                        const restaurantId = window.location.pathname.split('/')[4]; // Extract restaurant_id from URL
+                                        router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/items/update/${item.id}`);
+                                    }}
+                                    className="inline-flex items-center justify-center p-2 text-sm font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 cursor-pointer"
+                                    title="Edit item"
+                                >
+                                    <Edit size={16} />
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(item.id)}
+                                    className="inline-flex items-center justify-center p-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 cursor-pointer"
+                                    disabled={deleteMutation.isPending}
+                                    title="Delete item"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
+
+                            {/* Availability Badge */}
+                            <div className="absolute top-3 left-3">
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.available
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-red-100 text-red-800"
+                                    }`}>
                                     {item.available ? "Available" : "Unavailable"}
                                 </span>
+                            </div>
+                        </div>
+
+                        <div className="px-6 py-4">
+                            <div className="flex justify-between items-start mb-2">
+                                <h3 className="text-lg font-bold text-gray-800 overflow-hidden" style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 1 }}>
+                                    {item.name}
+                                </h3>
+                                <div className="flex items-center text-green-600 font-bold text-lg ml-2">
+                                    <DollarSign className="w-4 h-4" />
+                                    <span>{item.price}</span>
+                                </div>
+                            </div>
+
+                            <p className="text-gray-600 text-sm mb-3 overflow-hidden" style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2 }}>
+                                {item.description}
+                            </p>
+
+                            <div className="flex items-center text-gray-500 text-sm mb-3">
+                                <Tag className="w-4 h-4 mr-1 flex-shrink-0" />
+                                <span className="overflow-hidden" style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 1 }}>
+                                    {getCategoryName(item.category)}
+                                </span>
+                            </div>
+
+                            <div className="flex gap-2 flex-wrap">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {item.currency}
+                                </span>
                                 {item.is_vegetarian && (
-                                    <span className="px-2 py-1 rounded text-xs bg-green-100 text-green-800">
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <Leaf className="w-3 h-3 mr-1" />
                                         Vegetarian
                                     </span>
                                 )}
                                 {item.is_spicy && (
-                                    <span className="px-2 py-1 rounded text-xs bg-red-100 text-red-800">
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        <Flame className="w-3 h-3 mr-1" />
                                         Spicy
                                     </span>
                                 )}

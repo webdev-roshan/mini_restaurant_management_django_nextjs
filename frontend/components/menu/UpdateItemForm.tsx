@@ -77,7 +77,8 @@ const UpdateItemForm = ({ itemId }: Props) => {
 
         mutate(formData, {
             onSuccess: () => {
-                router.push("/dashboard/owner/menu/items");
+                const restaurantId = window.location.pathname.split('/')[4]; // Extract restaurant_id from URL
+                router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/items`);
             },
         });
     };

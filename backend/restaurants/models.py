@@ -12,3 +12,6 @@ class Restaurant(models.Model):
     description = models.TextField()
     address = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to="restaurants/images/", blank=True, null=True)
+    
+    def __str__(self):
+        return f"{self.name} ({self.owner.email})"

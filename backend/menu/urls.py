@@ -4,19 +4,23 @@ from .views import (
     CategoryRetrieveUpdateDeleteView,
     ItemsListCreateView,
     ItemsRetrieveUpdateDestroyView,
+    RestaurantCategoryListView,
 )
 
 urlpatterns = [
-    # Categories
     path("categories/", CategoryListCreateView.as_view(), name="category-list-create"),
     path(
         "categories/<int:pk>/",
         CategoryRetrieveUpdateDeleteView.as_view(),
         name="category-detail",
     ),
-    # Items
     path("items/", ItemsListCreateView.as_view(), name="item-list-create"),
     path(
         "items/<int:pk>/", ItemsRetrieveUpdateDestroyView.as_view(), name="item-detail"
+    ),
+    path(
+        "restaurant/<int:pk>/categories/",
+        RestaurantCategoryListView.as_view(),
+        name="restaurant-categories",
     ),
 ]

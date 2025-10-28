@@ -9,7 +9,7 @@ const CategoriesPage = () => {
         <ProtectedRoute allowedTypes={["owner"]}>
             <div className="space-y-6">
                 <MenuNavigation />
-                <CategoryList />
+                <CategoryList onlyOwner={true} />
             </div>
         </ProtectedRoute>
     );

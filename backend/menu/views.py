@@ -3,6 +3,8 @@ from .serializers import CategorySerializer, ItemsSerializer
 from authentication.permissions import IsOwner
 from .models import Category, Items
 from django.shortcuts import get_object_or_404
+from rest_framework import permissions
+from restaurants.models import Restaurant
 
 
 class CategoryListCreateView(generics.ListCreateAPIView):
@@ -52,3 +54,23 @@ class ItemsRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         pk = self.kwargs.get("pk")
         queryset = Items.objects.filter(category__restaurant__owner=self.request.user)
         return get_object_or_404(queryset, pk=pk)
+
+
+class RestaurantCategoryListView(generics.ListAPIView):
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        restaurant_id = self.kwargs.get("pk")
+        restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
+        return Category.objects.filter(restaurant=restaurant)
+
+
+class RestaurantOwnerCategoryListView(generics.ListAPIView):
+    serializer_class = CategorySerializer
+    permission_classes = [IsOwner]
+
+    def get_queryset(self):
+        restaurant_id = self.kwargs.get("pk")
+        restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
+        return Category.objects.filter(restaurant=restaurant)
