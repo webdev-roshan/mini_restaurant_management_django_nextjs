@@ -26,6 +26,20 @@ export const useOwnerRestaurants = () => {
     });
 };
 
+
+export const fetchOwnerRestaurant = async (restaurant_id: number): Promise<OwnerRestaurantResponse> => {
+    const response = await axiosInstance.get<OwnerRestaurantResponse>(`/restaurants/owner/${restaurant_id}/`);
+    return response.data;
+};
+
+export const useOwnerRestaurant = (restaurant_id: number) => {
+    return useQuery({
+        queryKey: ["restaurants", "owner", restaurant_id],
+        queryFn: () => fetchOwnerRestaurant(restaurant_id),
+        enabled: !!restaurant_id,
+    });
+};
+
 export const createRestaurant = async (data: CreateRestaurantData): Promise<OwnerRestaurantResponse> => {
     const formData = new FormData();
     formData.append("name", data.name);

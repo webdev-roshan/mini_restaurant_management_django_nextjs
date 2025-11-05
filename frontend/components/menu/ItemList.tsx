@@ -1,26 +1,21 @@
 "use client";
 
-import { useItems, useDeleteItem, useCategories } from "@/hooks/useMenu";
+import { useDeleteItem, useCategoryItems, useCategories } from "@/hooks/useMenu";
 import { Edit, Trash2, Plus, Utensils, DollarSign, Tag, Leaf, Flame } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useRouter, useParams } from "next/navigation";
 
 const ItemList = () => {
-    const { data: items, isLoading, error } = useItems();
-    const { data: categories } = useCategories();
-    const deleteMutation = useDeleteItem();
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const categoryFilter = searchParams.get("category");
+    const params = useParams();
+    const categoryId = Number(params.category_id);
+    const restaurantId = Number(params.restaurant_id);
 
-    const filteredItems = useMemo(() => {
-        if (!items) return [];
-        if (!categoryFilter) return items;
-        return items.filter(item => item.category === parseInt(categoryFilter));
-    }, [items, categoryFilter]);
+    const { data: items, isLoading, error } = useCategoryItems(categoryId);
+    const { data: categories } = useCategories();
+    const deleteMutation = useDeleteItem(categoryId);
 
     const getCategoryName = (categoryId: number) => {
-        return categories?.find(c => c.id === categoryId)?.name || "Unknown Category";
+        return categories?.find((c) => c.id === categoryId)?.name || "Unknown Category";
     };
 
     const handleDelete = (id: number) => {
@@ -46,23 +41,22 @@ const ItemList = () => {
         );
     }
 
-    if (!filteredItems || filteredItems.length === 0) {
+    if (!items || items.length === 0) {
         return (
             <div className="text-center py-12">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
                     <Utensils className="w-8 h-8 text-gray-400" />
                 </div>
                 <h3 className="text-lg font-medium text-gray-800 mb-2">
-                    {categoryFilter ? "No items in this category" : "No menu items found"}
+                    No items in this category
                 </h3>
                 <p className="text-gray-600 mb-6">
-                    {categoryFilter ? "This category doesn't have any items yet." : "Get started by adding your first menu item."}
+                    This category doesn’t have any items yet.
                 </p>
                 <button
-                    onClick={() => {
-                        const restaurantId = window.location.pathname.split('/')[4]; // Extract restaurant_id from URL
-                        router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/items/create`);
-                    }}
+                    onClick={() =>
+                        router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/categories/${categoryId}/items/create`)
+                    }
                     className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 cursor-pointer"
                 >
                     <Plus className="w-4 h-4 mr-2" />
@@ -77,34 +71,26 @@ const ItemList = () => {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h2 className="text-xl font-bold text-gray-800">Menu Items</h2>
-                    {categoryFilter ? (
-                        <div className="flex items-center gap-2 mt-1">
-                            <Tag className="w-4 h-4 text-gray-500" />
-                            <p className="text-gray-600">
-                                Category: {getCategoryName(parseInt(categoryFilter))}
-                            </p>
-                        </div>
-                    ) : (
-                        <p className="text-gray-600">Manage your menu items</p>
-                    )}
+                    <div className="flex items-center gap-2 mt-1">
+                        <Tag className="w-4 h-4 text-gray-500" />
+                        <p className="text-gray-600">
+                            Category: {getCategoryName(categoryId)}
+                        </p>
+                    </div>
                 </div>
                 <div className="flex gap-2">
-                    {categoryFilter && (
-                        <button
-                            onClick={() => {
-                                const restaurantId = window.location.pathname.split('/')[4]; // Extract restaurant_id from URL
-                                router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/items`);
-                            }}
-                            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 cursor-pointer border border-gray-300"
-                        >
-                            Show All Items
-                        </button>
-                    )}
                     <button
-                        onClick={() => {
-                            const restaurantId = window.location.pathname.split('/')[4]; // Extract restaurant_id from URL
-                            router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/items/create`);
-                        }}
+                        onClick={() =>
+                            router.push(`/dashboard/owner/restaurants/${restaurantId}/menu`)
+                        }
+                        className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 cursor-pointer border border-gray-300"
+                    >
+                        Back to Categories
+                    </button>
+                    <button
+                        onClick={() =>
+                            router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/${categoryId}/items/create`)
+                        }
                         className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 cursor-pointer"
                     >
                         <Plus size={18} className="mr-2" />
@@ -114,8 +100,11 @@ const ItemList = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredItems.map(item => (
-                    <div key={item.id} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl transition-transform duration-200 hover:-translate-y-1 cursor-pointer group">
+                {items.map((item) => (
+                    <div
+                        key={item.id}
+                        className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer group"
+                    >
                         <div className="relative">
                             {item.image ? (
                                 <img
@@ -124,17 +113,16 @@ const ItemList = () => {
                                     className="w-full h-48 object-cover"
                                 />
                             ) : (
-                                <div className="w-full h-48 bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center">
+                                <div className="w-full h-48 bg-linear-to-br from-orange-100 to-red-100 flex items-center justify-center">
                                     <Utensils className="w-12 h-12 text-orange-400" />
                                 </div>
                             )}
 
                             <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button
-                                    onClick={() => {
-                                        const restaurantId = window.location.pathname.split('/')[4]; // Extract restaurant_id from URL
-                                        router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/items/update/${item.id}`);
-                                    }}
+                                    onClick={() =>
+                                        router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/categories/${categoryId}/items/update/${item.id}`)
+                                    }
                                     className="inline-flex items-center justify-center p-2 text-sm font-medium text-white bg-yellow-500 rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 cursor-pointer"
                                     title="Edit item"
                                 >
@@ -150,12 +138,13 @@ const ItemList = () => {
                                 </button>
                             </div>
 
-                            {/* Availability Badge */}
                             <div className="absolute top-3 left-3">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.available
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-red-100 text-red-800"
-                                    }`}>
+                                <span
+                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.available
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-red-100 text-red-800"
+                                        }`}
+                                >
                                     {item.available ? "Available" : "Unavailable"}
                                 </span>
                             </div>
@@ -163,7 +152,7 @@ const ItemList = () => {
 
                         <div className="px-6 py-4">
                             <div className="flex justify-between items-start mb-2">
-                                <h3 className="text-lg font-bold text-gray-800 overflow-hidden" style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 1 }}>
+                                <h3 className="text-lg font-bold text-gray-800 truncate">
                                     {item.name}
                                 </h3>
                                 <div className="flex items-center text-green-600 font-bold text-lg ml-2">
@@ -172,15 +161,13 @@ const ItemList = () => {
                                 </div>
                             </div>
 
-                            <p className="text-gray-600 text-sm mb-3 overflow-hidden" style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2 }}>
+                            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
                                 {item.description}
                             </p>
 
                             <div className="flex items-center text-gray-500 text-sm mb-3">
-                                <Tag className="w-4 h-4 mr-1 flex-shrink-0" />
-                                <span className="overflow-hidden" style={{ display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 1 }}>
-                                    {getCategoryName(item.category)}
-                                </span>
+                                <Tag className="w-4 h-4 mr-1" />
+                                <span>{getCategoryName(item.category)}</span>
                             </div>
 
                             <div className="flex gap-2 flex-wrap">

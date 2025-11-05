@@ -2,9 +2,10 @@ from django.urls import path
 from .views import (
     CategoryListCreateView,
     CategoryRetrieveUpdateDeleteView,
-    ItemsListCreateView,
+    CategoryItemListView,
     ItemsRetrieveUpdateDestroyView,
     RestaurantCategoryListView,
+    ItemsListCreateView,
 )
 
 urlpatterns = [
@@ -13,6 +14,11 @@ urlpatterns = [
         "categories/<int:pk>/",
         CategoryRetrieveUpdateDeleteView.as_view(),
         name="category-detail",
+    ),
+    path(
+        "category/<int:pk>/items/",
+        CategoryItemListView.as_view(),
+        name="category-items",
     ),
     path("items/", ItemsListCreateView.as_view(), name="item-list-create"),
     path(

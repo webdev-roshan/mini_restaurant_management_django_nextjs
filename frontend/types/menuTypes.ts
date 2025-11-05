@@ -16,19 +16,12 @@ export interface Item {
 export interface Category {
     id: number;
     restaurant: number;
+    restaurant_name: string;
     name: string;
     description: string;
     created_at: string;
     updated_at: string;
     menu_items?: Item[];
-}
-
-export interface CategoryListResponse {
-    categories: Category[];
-}
-
-export interface ItemsListResponse {
-    items: Item[];
 }
 
 export interface CategoryPayload {

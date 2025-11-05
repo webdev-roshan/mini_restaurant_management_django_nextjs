@@ -1,9 +1,8 @@
-from rest_framework import generics
+from rest_framework import generics, permissions
 from .serializers import CategorySerializer, ItemsSerializer
 from authentication.permissions import IsOwner
 from .models import Category, Items
 from django.shortcuts import get_object_or_404
-from rest_framework import permissions
 from restaurants.models import Restaurant
 
 
@@ -29,24 +28,18 @@ class CategoryRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
         return get_object_or_404(queryset, pk=pk)
 
 
-class ItemsListCreateView(generics.ListCreateAPIView):
+class CategoryItemListView(generics.ListAPIView):
     serializer_class = ItemsSerializer
     permission_classes = [IsOwner]
 
     def get_queryset(self):
+        category_id = self.kwargs.get("pk")
         return Items.objects.filter(
-            category__restaurant__owner=self.request.user
-        ).order_by("category", "name")
-
-    def perform_create(self, serializer):
-        category = serializer.validated_data.get("category")
-        if category.restaurant.owner != self.request.user:
-            raise PermissionError("You cannot add items to another owner's category.")
-        serializer.save()
+            category__id=category_id, category__restaurant__owner=self.request.user
+        )
 
 
 class ItemsRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-
     serializer_class = ItemsSerializer
     permission_classes = [IsOwner]
 
@@ -66,11 +59,16 @@ class RestaurantCategoryListView(generics.ListAPIView):
         return Category.objects.filter(restaurant=restaurant)
 
 
-class RestaurantOwnerCategoryListView(generics.ListAPIView):
-    serializer_class = CategorySerializer
+class ItemsListCreateView(generics.ListCreateAPIView):
+    serializer_class = ItemsSerializer
     permission_classes = [IsOwner]
 
     def get_queryset(self):
-        restaurant_id = self.kwargs.get("pk")
-        restaurant = get_object_or_404(Restaurant, pk=restaurant_id)
-        return Category.objects.filter(restaurant=restaurant)
+        return Items.objects.filter(category__restaurant__owner=self.request.user)
+
+    def perform_create(self, serializer):
+        category_id = self.request.data.get("category")
+        category = get_object_or_404(
+            Category, id=category_id, restaurant__owner=self.request.user
+        )
+        serializer.save(category=category)

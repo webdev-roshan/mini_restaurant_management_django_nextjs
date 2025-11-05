@@ -11,12 +11,12 @@ interface Props {
 
 const CategoryList = ({ onlyOwner = false, restaurant_id }: Props) => {
     const router = useRouter();
-    const params = useParams();
-    const restaurantId = params.restaurant_id as string || restaurant_id?.toString();
 
-    const { data: categories, isLoading, error } = onlyOwner
-        ? useCategories()
-        : useRestaurantCategory(restaurant_id!);
+    const params = useParams();
+    const restaurantId = params.restaurant_id ? Number(params.restaurant_id) : undefined;
+
+    const { data: categories, isLoading, error } = useRestaurantCategory(restaurantId);
+
 
     const deleteMutation = useDeleteCategory();
 
@@ -122,7 +122,7 @@ const CategoryList = ({ onlyOwner = false, restaurant_id }: Props) => {
                                         {category.menu_items?.length || 0} items
                                     </div>
                                     <button
-                                        onClick={() => router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/items?category=${category.id}`)}
+                                        onClick={() => router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/categories/${category.id}/items/`)}
                                         className="text-blue-600 hover:text-blue-700 text-sm font-medium cursor-pointer transition-colors"
                                     >
                                         View Items →

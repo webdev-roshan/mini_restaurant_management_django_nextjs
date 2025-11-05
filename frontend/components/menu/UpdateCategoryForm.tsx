@@ -5,6 +5,7 @@ import { useUpdateCategory, useCategories } from "@/hooks/useMenu";
 import { CategoryPayload } from "@/types/menuTypes";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { useOwnerRestaurant } from "@/hooks/useRestaurants";
 
 interface Props {
     categoryId: number;
@@ -14,7 +15,7 @@ const UpdateCategoryForm = ({ categoryId }: Props) => {
     const router = useRouter();
     const params = useParams();
     const restaurantId = parseInt(params.restaurant_id as string);
-    
+
     const [formData, setFormData] = useState<CategoryPayload>({
         restaurant: restaurantId,
         name: "",
@@ -22,6 +23,8 @@ const UpdateCategoryForm = ({ categoryId }: Props) => {
     });
 
     const { data: categories } = useCategories();
+    const { data: ownerRestaurant, isLoading, isError } = useOwnerRestaurant(restaurantId)
+
     const { mutate, isPending, error } = useUpdateCategory(categoryId);
 
     const category = categories?.find(c => c.id === categoryId);
@@ -67,6 +70,16 @@ const UpdateCategoryForm = ({ categoryId }: Props) => {
         </div>
     );
 
+
+    if (!ownerRestaurant) {
+        return <div>No restaurants related to this id</div>
+    }
+
+    if (isError) {
+        return <div>Failed to load restaurant data</div>
+    }
+
+
     return (
         <div className="max-w-2xl mx-auto fade-in">
             <div className="flex items-center gap-4 mb-6">
@@ -88,7 +101,7 @@ const UpdateCategoryForm = ({ categoryId }: Props) => {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                             <p className="text-sm text-blue-800">
-                                <strong>Restaurant ID:</strong> {restaurantId}
+                                <strong>Restaurant Name:</strong> {ownerRestaurant?.name}
                             </p>
                             <p className="text-xs text-blue-600 mt-1">
                                 This category belongs to the selected restaurant

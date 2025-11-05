@@ -5,13 +5,15 @@ import UpdateItemForm from "@/components/menu/UpdateItemForm";
 import { useParams } from "next/navigation";
 
 const UpdateItemPage = () => {
+
     const params = useParams();
     const itemId = parseInt(params.id as string);
+    const categoryId = parseInt(params.category_id as string);
 
     return (
         <ProtectedRoute allowedTypes={["owner"]}>
             <div className="space-y-6">
-                <UpdateItemForm itemId={itemId} />
+                <UpdateItemForm itemId={itemId} categoryId={categoryId} />
             </div>
         </ProtectedRoute>
     );

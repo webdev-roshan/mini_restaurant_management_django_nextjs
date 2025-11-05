@@ -10,7 +10,7 @@ const OwnerMenuDashboard = () => {
     const router = useRouter();
     const params = useParams();
     const restaurantId = params.restaurant_id as string;
-    
+
     const { data: restaurants, isLoading } = useOwnerRestaurants();
     const restaurant = restaurants?.find(r => r.id === parseInt(restaurantId));
 
@@ -29,7 +29,7 @@ const OwnerMenuDashboard = () => {
         <ProtectedRoute allowedTypes={["owner"]}>
             <div className="space-y-6 fade-in">
                 <MenuNavigation />
-                
+
                 {/* Restaurant Header */}
                 <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
                     <div className="flex items-center gap-4">
@@ -46,7 +46,7 @@ const OwnerMenuDashboard = () => {
                         </div>
                     </div>
                 </div>
-                
+
                 {/* Management Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer group">
@@ -77,39 +77,6 @@ const OwnerMenuDashboard = () => {
                                 >
                                     <Plus className="w-4 h-4 mr-2" />
                                     Create Category
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer group">
-                        <div className="p-6">
-                            <div className="flex items-center mb-4">
-                                <div className="bg-orange-100 p-3 rounded-lg mr-4">
-                                    <Utensils className="w-6 h-6 text-orange-600" />
-                                </div>
-                                <div>
-                                    <h2 className="text-xl font-semibold text-gray-800">Menu Items</h2>
-                                    <p className="text-gray-600 text-sm">Manage food & beverages</p>
-                                </div>
-                            </div>
-                            <p className="text-gray-600 mb-6 text-sm">
-                                Add and manage individual menu items with prices, descriptions, images, and dietary information.
-                            </p>
-                            <div className="space-y-3">
-                                <button
-                                    onClick={() => router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/items`)}
-                                    className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                                >
-                                    <Utensils className="w-4 h-4 mr-2" />
-                                    Manage Items
-                                </button>
-                                <button
-                                    onClick={() => router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/items/create`)}
-                                    className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                                >
-                                    <Plus className="w-4 h-4 mr-2" />
-                                    Create Item
                                 </button>
                             </div>
                         </div>

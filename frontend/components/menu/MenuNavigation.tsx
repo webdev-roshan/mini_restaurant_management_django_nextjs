@@ -16,7 +16,6 @@ const MenuNavigation = () => {
     const navItems = [
         { label: "Menu Overview", path: `/dashboard/owner/restaurants/${restaurantId}/menu` },
         { label: "Categories", path: `/dashboard/owner/restaurants/${restaurantId}/menu/categories` },
-        { label: "Items", path: `/dashboard/owner/restaurants/${restaurantId}/menu/items` },
     ];
 
     return (

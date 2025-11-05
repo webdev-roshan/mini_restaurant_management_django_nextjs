@@ -1,19 +1,20 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useUpdateItem, useItems, useCategories } from "@/hooks/useMenu";
+import { useUpdateItem, useCategoryItems } from "@/hooks/useMenu";
 import { ItemPayload } from "@/types/menuTypes";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface Props {
     itemId: number;
+    categoryId: number;
 }
 
-const UpdateItemForm = ({ itemId }: Props) => {
+const UpdateItemForm = ({ itemId, categoryId }: Props) => {
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [formData, setFormData] = useState<ItemPayload>({
-        category: 0,
+        category: categoryId,
         name: "",
         description: "",
         currency: "USD",
@@ -24,33 +25,32 @@ const UpdateItemForm = ({ itemId }: Props) => {
         is_spicy: false,
     });
 
-    const { data: items } = useItems();
-    const { data: categories, isLoading: categoriesLoading } = useCategories();
-    const { mutate, isPending, error } = useUpdateItem(itemId);
+    const { data: items } = useCategoryItems(categoryId);
+    const { mutate, isPending, error } = useUpdateItem(itemId, categoryId);
 
     const item = items?.find(i => i.id === itemId);
 
     useEffect(() => {
         if (item) {
             setFormData({
-                category: item.category,
+                category: categoryId,
                 name: item.name,
                 description: item.description,
                 currency: item.currency,
                 price: item.price,
                 available: item.available,
-                image: null, // Don't pre-populate file input
+                image: null,
                 is_vegetarian: item.is_vegetarian,
                 is_spicy: item.is_spicy,
             });
         }
-    }, [item]);
+    }, [item, categoryId]);
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         const { name, value, type } = e.target;
-        
+
         if (type === "checkbox") {
             const checked = (e.target as HTMLInputElement).checked;
             setFormData(prev => ({ ...prev, [name]: checked }));
@@ -62,52 +62,38 @@ const UpdateItemForm = ({ itemId }: Props) => {
         } else {
             setFormData(prev => ({
                 ...prev,
-                [name]: name === "category" || name === "price" ? 
-                    (value === "" ? 0 : parseFloat(value)) : value
+                [name]: name === "price" ? (value === "" ? 0 : parseFloat(value)) : value
             }));
         }
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.name || !formData.description || !formData.category || formData.price <= 0) {
+        if (!formData.name || !formData.description || formData.price <= 0) {
             alert("Please fill in all required fields and ensure price is greater than 0.");
             return;
         }
 
         mutate(formData, {
             onSuccess: () => {
-                const restaurantId = window.location.pathname.split('/')[4]; // Extract restaurant_id from URL
-                router.push(`/dashboard/owner/restaurants/${restaurantId}/menu/items`);
+                router.back();
             },
         });
     };
 
-    if (categoriesLoading || !item) return <p>Loading...</p>;
+    if (!item || !categoryId) return <p>Loading...</p>;
 
     return (
         <div className="max-w-lg mx-auto">
             <h1 className="text-2xl font-bold mb-6">Update Item</h1>
-            
-            <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-xl shadow-md">
-                <div>
-                    <label className="block text-sm font-medium mb-1">Category</label>
-                    <select
-                        name="category"
-                        value={formData.category}
-                        onChange={handleChange}
-                        className="w-full border rounded-lg px-3 py-2"
-                        required
-                    >
-                        <option value="">Select a category</option>
-                        {categories?.map(category => (
-                            <option key={category.id} value={category.id}>
-                                {category.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
 
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                    This item belongs to the selected category.
+                </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-xl shadow-md">
                 <div>
                     <label className="block text-sm font-medium mb-1">Item Name</label>
                     <input
